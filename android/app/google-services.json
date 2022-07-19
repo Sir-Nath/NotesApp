@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "774651767944",
+    "project_id": "flutter-notes-bynath",
+    "storage_bucket": "flutter-notes-bynath.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774651767944:android:8a1cccdfca97183116033d",
+        "android_client_info": {
+          "package_name": "com.peternathaniel49.notes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774651767944-mf831jmh3kpv10uvgg35rs3llpi4hpso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAru7xMY7LuIPwhg2fz9kf1LyqSMJXqvc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774651767944-mf831jmh3kpv10uvgg35rs3llpi4hpso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
