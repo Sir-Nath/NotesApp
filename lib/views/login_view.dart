@@ -1,10 +1,7 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'dart:developer';
 import 'package:notes/constants/route.dart';
-
 import '../utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -34,29 +31,10 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     centerTitle: true,
-    //     title: const Text(
-    //       'LOGIN',
-    //     ),
-    //   ),
-    //   body: FutureBuilder<Object>(
-    //       future: Firebase.initializeApp(
-    //         options: DefaultFirebaseOptions.currentPlatform,
-    //       ),
-    //       builder: (context, snapshot) {
-    //         switch (snapshot.connectionState) {
-    //           case ConnectionState.done:
-    //
-    //           default:
-    //             return const Text('Loading');
-    //         }
-    //       }),
-    // );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
         centerTitle: true,
       ),
       body: Column(
@@ -84,12 +62,17 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
+                await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
                         email: email, password: password);
-                log(userCredential.toString());
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(noteRoute, (route) => false);
+                final user = FirebaseAuth.instance.currentUser;
+                if(user?.emailVerified ?? false){
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(noteRoute, (route) => false);
+                }else{
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false);
+                }
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found'){
                   await showErrorDialog(context, 'User not found');
@@ -115,7 +98,7 @@ class _LoginViewState extends State<LoginView> {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
-            child: Text('Not Registered yet? Register here'),
+            child: const Text('Not Registered yet? Register here'),
           )
         ],
       ),
