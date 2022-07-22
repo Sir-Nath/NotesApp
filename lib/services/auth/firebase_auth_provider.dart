@@ -1,3 +1,6 @@
+///Checking through Firebase console we realize there are more than one authentication provider namely; email & password, google, facebook e.t.c
+///so we need to create a firebaseauthprovider which will be from another class called authprovider,
+///where we state the functionality we expect all authprovider to render to be namely; current user, login, logout, send verification.
 
 
 import 'auth_user.dart';

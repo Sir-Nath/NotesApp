@@ -31,26 +31,6 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     centerTitle: true,
-    //     title: const Text(
-    //       'Register',
-    //     ),
-    //   ),
-    //   body: FutureBuilder<Object>(
-    //       future: Firebase.initializeApp(
-    //         options: DefaultFirebaseOptions.currentPlatform,
-    //       ),
-    //       builder: (context, snapshot) {
-    //         switch (snapshot.connectionState) {
-    //           case ConnectionState.done:
-    //             return
-    //           default:
-    //             return const Text('Loading');
-    //         }
-    //       }),
-    // );
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
