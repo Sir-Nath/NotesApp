@@ -6,7 +6,7 @@ import 'package:notes/views/login_view.dart';
 import 'package:notes/views/register_view.dart';
 import 'package:notes/views/verify_email_view.dart';
 import 'firebase_options.dart';
-import 'dart:developer';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +19,10 @@ void main() {
       ),
       home: const HomePage(),
       routes: {
-        loginRoute: (context) => LoginView(),
-        registerRoute: (context) => RegisterView(),
-        noteRoute: (context) => NotesView()
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        noteRoute: (context) => const NotesView(),
+        verifyEmailRoute: (context) => const VerifyEmailView()
 
       },
     ),
@@ -43,9 +44,9 @@ class HomePage extends StatelessWidget {
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
                 if (user.emailVerified) {
-                  return NotesView();
+                  return const NotesView();
                 } else {
-                  return VerifyEmailView();
+                  return const VerifyEmailView();
                 }
               } else {
                 return const LoginView();
@@ -61,9 +62,9 @@ class HomePage extends StatelessWidget {
             // }
             //return LoginView();
             default:
-              return Scaffold(
+              return const Scaffold(
                 body: Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 ),
               );
           }
@@ -85,7 +86,7 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Notes'),
+        title: const Text('Your Notes'),
         centerTitle: true,
         actions: [
           PopupMenuButton<MenuAction>(
@@ -102,7 +103,7 @@ class _NotesViewState extends State<NotesView> {
             },
             itemBuilder: (context) {
               return [
-                PopupMenuItem<MenuAction>(
+                const PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
                   child: Text('Log Out'),
                 ),
@@ -120,20 +121,20 @@ Future<bool> showLogoutDialog(BuildContext context) {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('LogOut'),
-          content: Text('Do you want to log out?'),
+          title: const Text('LogOut'),
+          content: const Text('Do you want to log out?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: Text('Logout'),
+              child: const Text('Logout'),
             ),
           ],
         );
