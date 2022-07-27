@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer';
 import 'package:notes/constants/route.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/utilities/show_error_dialog.dart';
+import '../services/auth/auth_exception.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -34,69 +34,136 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Register'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('Register',
+          style: TextStyle(
+            color: Colors.black.withOpacity(0.6),
+            fontSize: 18
+          ),
+        ),
       ),
-      body: Column(
-        children: [
-          TextField(
-            controller: _email,
-            autocorrect: false,
-            enableSuggestions: false,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              hintText: 'input your email here',
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 30,
             ),
-          ),
-          TextField(
-            obscureText: true,
-            autocorrect: false,
-            enableSuggestions: false,
-            controller: _password,
-            decoration:
-                const InputDecoration(hintText: 'input your password here'),
-          ),
-          TextButton(
-            //this is an application of future, async and await
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
-                await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                        email: email, password: password);
-                final user = FirebaseAuth.instance.currentUser;
-                await user?.sendEmailVerification();
-                Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  log('Weak Password');
-                  await showErrorDialog(context, 'Weak Password');
-                } else if (e.code == 'email-already-in-use') {
-                  log('Email in use');
+            const Text('Register Here',
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w400
+              ),
+            ),
+            Text('Register with email and password',
+              style: TextStyle(
+                  color: Colors.black.withOpacity(0.6),
+                  fontSize: 14
+              ),),
+            const SizedBox(
+              height: 30,
+            ),
+            TextField(
+              controller: _email,
+              autocorrect: false,
+              enableSuggestions: false,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                suffixIcon: const Icon(Icons.person),
+                hintText: 'input your email here',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(29),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30,),
+            TextField(
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              controller: _password,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                suffixIcon: const Icon(Icons.visibility_off),
+                hintText: 'input your password here',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(29),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30,),
+            GestureDetector(
+              onTap: () async {
+                final email = _email.text;
+                final password = _password.text;
+                try {
+                  AuthService.firebase().createUser(
+                    email: email,
+                    password: password,
+                  );
+                  await AuthService.firebase().sendEmailVerification();
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
+                } on WeakPasswordAuthException {
+                  await showErrorDialog(context, 'Weak  Password');
+                } on EmailAlreadyInUseAuthException {
                   await showErrorDialog(context, 'Email in use');
-                } else if (e.code == 'invalid-email') {
-                  log('Email doesn\'t exist');
+                } on InvalidEmailAuthException {
                   await showErrorDialog(context, 'Email doesn\'t exist');
-                } else {
-                  await showErrorDialog(context, 'Error: ${e.code}');
+                } on GenericAuthException {
+                  await showErrorDialog(context, 'Failed to Register');
                 }
-              } catch (e) {
-                await showErrorDialog(context, e.toString());
-              }
-            },
-            child: const Text(
-              'Register',
-              style: TextStyle(fontSize: 20),
+              },
+              child: Container(
+                width: 350,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                child: const Center(
+                  child: Text(
+                  'Register',
+                  style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  ),
+                ),
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(29)
+                ),
+              ),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
-            },
-            child: const Text('Registered? Login'),
-          )
-        ],
+            const SizedBox(height: 30,),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+              },
+              child: RichText(
+                text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: ' Registered?',
+                          style: TextStyle(
+                              color: Colors.black.withOpacity(0.6),
+                              fontSize: 12
+                          )
+                      ),
+                      const TextSpan(
+                          text: ' Login',
+                          style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 13
+                          )
+                      )
+                    ]
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

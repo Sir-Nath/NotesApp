@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/constants/route.dart';
+import 'package:notes/services/auth/auth_service.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({Key? key}) : super(key: key);
@@ -14,30 +14,84 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verify Email"),
+        foregroundColor: Colors.black,
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('Verify Email',
+          style: TextStyle(
+              color: Colors.black.withOpacity(0.6),
+              fontSize: 18
+          ),
+        ),
       ),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text('we have already sent a verification email'),
-            TextButton(
-                onPressed: () async {
-                  final user = FirebaseAuth.instance.currentUser;
-                  await user?.sendEmailVerification();
-                },
-                child: const Text('tap on if you do not get a mail'),),
-            TextButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.of(context).pushNamedAndRemoveUntil(registerRoute, (route) => false);
-
-                },
-                child: const Text('Restart'),)
-          ],
+            SizedBox(height: 30,),
+            Text('we have already sent a verification email \n please check you email and verify',
+              style: TextStyle(
+                  color: Colors.black.withOpacity(0.6),
+                  fontSize: 16
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30,),
+            Container(
+              width: 350,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(29),
+                child: TextButton(
+                    onPressed: () async {
+                      final user = AuthService.firebase().currentUser;
+                      AuthService.firebase().sendEmailVerification();
+                    },
+                    child: const Text(
+                  'Resend Mail',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(Colors.blue),
+                ),
+                ),
+              ),
+            ),
+            SizedBox(height: 30,),
+            Container(
+              width: 350,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(29),
+                child: TextButton(
+                    onPressed: () async {
+                      AuthService.firebase().logout();
+                      Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                    },
+                    child: const Text(
+                      'Go back to Login',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(
+                      EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                  ),
+              ),
+            ),
         ),
+        ]
       ),
+      )
     );
   }
 }

@@ -3,6 +3,9 @@
 ///where we state the functionality we expect all authprovider to render to be namely; current user, login, logout, send verification.
 
 
+import 'package:firebase_core/firebase_core.dart';
+
+import '../../firebase_options.dart';
 import 'auth_user.dart';
 import 'auth_provider.dart';
 import 'auth_exception.dart';
@@ -10,6 +13,9 @@ import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
 
 class FirebaseAuthProvider implements AuthProvider {
+
+
+  //method createUser and login return a type Authuser same as getter currentUser
   @override
   Future<AuthUser> createUser({
     required String email,
@@ -46,6 +52,7 @@ class FirebaseAuthProvider implements AuthProvider {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       return AuthUser.fromFirebase(user);
+      //this return statement will return an instance of the AuthUser with a bool parameter which depends on the input user
     } else {
       return null;
     }
@@ -78,6 +85,8 @@ class FirebaseAuthProvider implements AuthProvider {
     }
   }
 
+  //the method logout and sendEmailVerification are returning nothing and their operation depends on an instance of Firebase.instance.currentUser
+
   @override
   Future<void> logout() async{
   final user = FirebaseAuth.instance.currentUser;
@@ -96,5 +105,13 @@ class FirebaseAuthProvider implements AuthProvider {
     } else {
       throw UserNotLoggedInAuthException();
     }
+  }
+
+  @override
+  Future<void> initialise() async{
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    throw UnimplementedError();
   }
 }
