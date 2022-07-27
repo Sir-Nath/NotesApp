@@ -24,6 +24,7 @@ class Body extends StatelessWidget {
                 builder: (context, snapshot){
                   switch (snapshot.connectionState){
                     case ConnectionState.waiting:
+                    case ConnectionState.active:
                       return NoteBody();
                     default:
                       return const CircularProgressIndicator();
