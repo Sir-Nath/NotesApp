@@ -22,13 +22,12 @@ class DatabaseNote {
       : id = map[idColumn] as int,
         userId = map[userIdColumn] as int,
         text = map[textColumn] as String,
-        isSyncedWithCloud =
-        (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
+        isSyncedWithCloud = (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
 
   //we are overriding the toString() function to return the following contents. upon calling it on the class object, we get the result as written here.
   @override
   String toString() =>
-      'Person, ID = $id, userId = $userId, isSyncedWithCloud = $isSyncedWithCloud, text = $text';
+      'Note, ID = $id, userId = $userId, isSyncedWithCloud = $isSyncedWithCloud, text = $text';
   //we are overriding the == operator to allow us compare parameters of the same type using the id(in this case of our Note)
   @override
   bool operator ==(covariant DatabaseUser other) => id == other.id;

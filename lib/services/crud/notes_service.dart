@@ -74,11 +74,6 @@ class NoteService {
       noteTable,
     );
     return notes.map((noteRow) => DatabaseNote.fromRow(noteRow));
-    // if(notes.isEmpty){
-    //   throw CouldNotFindNote();
-    // }else{
-    //   return DatabaseNote.fromRow(notes.first);
-    // }
   }
 
   //this function grabs a note for us using the id of the note
@@ -162,7 +157,7 @@ class NoteService {
     final result = await db.query(
       userTable,
       limit: 1,
-      where: 'email =?',
+      where: 'email = ?',
       whereArgs: [email.toLowerCase()],
     );
     if (result.isEmpty) {
@@ -181,7 +176,7 @@ class NoteService {
     final result = await db.query(
       userTable,
       limit: 1,
-      where: 'email =?',
+      where: 'email = ?',
       whereArgs: [email.toLowerCase()],
     );
     //if the user exist before then the returned list should not be empty
@@ -201,10 +196,9 @@ class NoteService {
     //function db.delete returns an integer of either 0 or 1, 0 stands for not nothing to delete and 1 stands for a user deleted.
     final deletedCount = await db.delete(
       userTable,
-      where: 'email',
+      where: 'email = ?',
       whereArgs: [email.toLowerCase()],
     );
-
     if (deletedCount != 1) {
       throw CouldNotDeleteUser();
     }
