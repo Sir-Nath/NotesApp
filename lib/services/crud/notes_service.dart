@@ -8,17 +8,28 @@ import 'database_note.dart';
 import 'database_user.dart';
 
 class NoteService {
-  Database? _db;
+  //we create an instance of the Database from package SQlite
+  Database? _db; //our database is _db
 
-  List<DatabaseNote> _notes = [];
+  List<DatabaseNote> _notes = []; //we are creating an empty list which should contain our databaseNote which is a map of string and objects.
 
   //creating a singleton
-  static final NoteService _shared = NoteService._sharedInstance();
-  NoteService._sharedInstance();
-  factory NoteService() => _shared;
+  NoteService._sharedInstance(){ //this is a private constructor
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: (){
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
+  static final NoteService _shared = NoteService._sharedInstance(); //we instantiate an object _shared which is an instance of the private Constructor
+  factory NoteService() => _shared; //our factory constructor returns the instantiated object
+  //singleton: The singleton pattern is a pattern used in object-oriented programming
+  // which ensures that a class has only one instance and also provides a global point
+  //of access to it. Sometimes it's important for a class to have exactly one instance,
+  // or you might force your app into a weird state.
 
-  final _notesStreamController = StreamController<List<DatabaseNote>>.broadcast();
 
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   Future<void> _cacheNotes() async{
@@ -27,19 +38,23 @@ class NoteService {
     _notesStreamController.add(_notes);
   }
 
-  Future<DatabaseNote> updateNote({
+  Future<DatabaseNote> updateNote({ // to update our note we need the previous note and the text to add to it
     required DatabaseNote note,
     required String text,
   }) async {
-    await _ensureDbIsOpen();
-    final db = _getDatabaseOrThrow();
+    await _ensureDbIsOpen(); //ensures db is open
+    final db = _getDatabaseOrThrow(); //either returns db or throws an exception of database not open
+    // which don't expect to see due to the previous function called
 
     await getNote(id: note.id);
 
     final updateCount = await db.update(noteTable, {
       textColumn: text,
       isSyncedWithCloudColumn: 0,
-    });
+    },
+    where: 'id = ?',
+      whereArgs: [note.id]
+    );
 
     if (updateCount == 0) {
       throw CouldNotUpdateNote();
@@ -66,19 +81,25 @@ class NoteService {
     // }
   }
 
+  //this function grabs a note for us using the id of the note
   Future<DatabaseNote> getNote({required int id}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+    //the previous two function sees to opening the database or throwing an exception
+
+    //the .query fetches our note for us based on id inputted
     final notes = await db.query(
       noteTable,
       limit: 1,
-      where: 'id =?',
+      where: 'id = ?',
       whereArgs: [id],
     );
+    //if the note exist, we expect to find the note else it doesn't exist
     if (notes.isEmpty) {
       throw CouldNotFindNote();
     } else {
       final note = DatabaseNote.fromRow(notes.first);
+      //this constructor takes a map and .first return the first element
       _notes.removeWhere((note) => note.id == id);
       _notes.add(note);
       _notesStreamController.add(_notes);
@@ -225,11 +246,12 @@ class NoteService {
     }
   }
 
+  //this function ensure our db is opened
   Future<void> _ensureDbIsOpen() async{
     try{
-      await open();
+      await open(); //it opens it
     }on DatabaseAlreadyOpenException{
-
+      //upon this exception that it is opened already, we let nothing happens than just leave the database open
     }
 }
 

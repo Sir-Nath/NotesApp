@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../../services/crud/database_note.dart';
 import '../../../services/crud/notes_service.dart';
 
 
 class Body extends StatelessWidget {
-  const Body({
+  late final NoteService _noteService;
+  Body({
     Key? key,
     required NoteService noteService,
     required this.userEmail,
   }) : _noteService = noteService, super(key: key);
 
-  final NoteService _noteService;
+
   final String userEmail;
 
   @override
@@ -25,7 +27,18 @@ class Body extends StatelessWidget {
                   switch (snapshot.connectionState){
                     case ConnectionState.waiting:
                     case ConnectionState.active:
-                      return NoteBody();
+                      if(snapshot.hasData){
+                        final allNote = snapshot.data as List<DatabaseNote>;
+                        return Center(child: Text('${allNote.length}'));
+                        //   ListView.builder(
+                        //   itemCount: allNote.length,
+                        //   itemBuilder: (context, index){
+                        //     return Text('item');
+                        //   },
+                        // );
+                      }else{
+                        return CircularProgressIndicator();
+                      }
                     default:
                       return const CircularProgressIndicator();
                   }
@@ -39,35 +52,3 @@ class Body extends StatelessWidget {
   }
 }
 
-class NoteBody extends StatefulWidget {
-  const NoteBody({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<NoteBody> createState() => _NoteBodyState();
-}
-
-class _NoteBodyState extends State<NoteBody> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 30,
-          ),
-          const Text(
-            'Notes',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w400),
-          ),
-          Text(
-            'Main page',
-            style:
-            TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 14),
-          ),
-        ],
-      ),
-    );
-  }
-}

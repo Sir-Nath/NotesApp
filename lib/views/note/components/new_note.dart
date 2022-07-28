@@ -118,39 +118,6 @@ class _NewNoteViewState extends State<NewNoteView> {
                 return const CircularProgressIndicator();
             }
           },
-        ));
-  }
-}
-
-class NoteBody extends StatefulWidget {
-  const NoteBody({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<NoteBody> createState() => _NoteBodyState();
-}
-
-class _NoteBodyState extends State<NoteBody> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 30,
-          ),
-          const Text(
-            'New Notes',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w400),
-          ),
-          Text(
-            '.....................',
-            style:
-                TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 14),
-          ),
-        ],
-      ),
-    );
+        ),);
   }
 }

@@ -11,7 +11,7 @@ const createUserTable = '''CREATE TABLE IF NOT EXISTS "user" (
 	"email"	TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );''';
-const createNoteTable = '''CREATE TABLE "notes" (
+const createNoteTable = '''CREATE TABLE IF NOT EXISTS "notes" (
 	"id"	INTEGER NOT NULL,
 	"user_id"	INTEGER NOT NULL,
 	"text"	TEXT,
