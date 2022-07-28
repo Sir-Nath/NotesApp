@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:notes/constants/route.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/services/crud/notes_service.dart';
-import 'components/body.dart';
+import '../../services/crud/database_note.dart';
 import 'components/pop_up_button.dart';
 
 class NotesView extends StatefulWidget {
@@ -33,27 +35,63 @@ class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.black,
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Note',
-          style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 18),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(newNoteRoute);
-            },
-            icon: Icon(Icons.add),
+        appBar: AppBar(
+          foregroundColor: Colors.black,
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            'Note',
+            style:
+                TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 18),
           ),
-          PopUpButton(),
-
-        ],
-      ),
-      body: Body(noteService: _noteService, userEmail: userEmail),
-    );
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(newNoteRoute);
+              },
+              icon: Icon(Icons.add),
+            ),
+            PopUpButton(),
+          ],
+        ),
+        body: FutureBuilder(
+            future: _noteService.getOrCreateUser(email: userEmail),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  return StreamBuilder(
+                      stream: _noteService.allNotes,
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.active:
+                            if (snapshot.hasData) {
+                              final allNote =
+                                  snapshot.data as List<DatabaseNote>;
+                              return ListView.builder(
+                                itemCount: allNote.length,
+                                itemBuilder: (context, index) {
+                                  final note = allNote[index];
+                                  return ListTile(
+                                    leading: Icon(Icons.note),
+                                    title: Text(note.text,
+                                    maxLines: 1,
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              return const CircularProgressIndicator();
+                            }
+                          default:
+                            return const CircularProgressIndicator();
+                        }
+                      });
+                default:
+                  return const CircularProgressIndicator();
+              }
+            }));
   }
 }

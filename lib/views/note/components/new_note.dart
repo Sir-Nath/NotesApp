@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import '../../../services/crud/database_note.dart';
@@ -41,6 +42,7 @@ class _NewNoteViewState extends State<NewNoteView> {
         note: note,
         text: text,
       );
+
     }
   }
 
@@ -60,15 +62,18 @@ class _NewNoteViewState extends State<NewNoteView> {
   }
 
   void _textControllerListener() async {
+
     final note = _note;
     if (note == null) {
       return;
     }
     final text = _textController.text;
+
     await _noteService.updateNote(
       note: note,
       text: text,
     );
+
   }
 
   void _setupTextControllerListener() {
@@ -93,6 +98,7 @@ class _NewNoteViewState extends State<NewNoteView> {
         body: FutureBuilder(
           future: createNewNote(),
           builder: (context, snapshot) {
+            //we got here in our code
             switch (snapshot.connectionState) {
               case ConnectionState.done:
                 _note = snapshot.data as DatabaseNote?;
