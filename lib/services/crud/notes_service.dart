@@ -9,12 +9,13 @@ import 'database_user.dart';
 
 class NoteService {
   //we create an instance of the Database from package SQlite
-  Database? _db; //our database is _db
+  //our database is _db
+  Database? _db;
 
-  List<DatabaseNote> _notes = []; //we are creating an empty list which should
+  List<DatabaseNote> _notes = [];//we are creating an empty list which should
   // contain our databaseNote which is a map of string and objects.
 
-  DatabaseUser? _user;
+
   //creating a singleton
   static final NoteService _shared = NoteService._sharedInstance();
   NoteService._sharedInstance(){
@@ -26,7 +27,8 @@ class NoteService {
     );
   }
    //we instantiate an object _shared which is an instance of the private Constructor
-  factory NoteService() => _shared; //our factory constructor returns the instantiated object
+  factory NoteService() => _shared;
+  //our factory constructor returns the instantiated object
   //singleton: The singleton pattern is a pattern used in object-oriented programming
   // which ensures that a class has only one instance and also provides a global point
   //of access to it. Sometimes it's important for a class to have exactly one instance,
@@ -34,7 +36,6 @@ class NoteService {
 
 
   late final StreamController<List<DatabaseNote>> _notesStreamController;
-
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   Future<void> _cacheNotes() async {
@@ -145,7 +146,7 @@ class NoteService {
     if (dbUser != owner) {
       throw CouldNotFindUser();
     }
-    const text = 'hi';
+    const text = '';
     final noteId = await db.insert(noteTable,
         {userIdColumn: owner.id, textColumn: text});
     final note = DatabaseNote(
@@ -169,7 +170,6 @@ class NoteService {
     if (result.isEmpty) {
       throw CouldNotFindUser();
     } else {
-
       return DatabaseUser.fromRow(result.first);
     }
   }
