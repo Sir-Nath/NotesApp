@@ -17,15 +17,16 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   late final NoteService
       _noteService; //calling an instance of the class NoteService and making it private
   late final TextEditingController
-      _textBody; //calling an private instance of the class TextEditingController to access the methods available to read our text from text field
-
+      _textTitle; //calling an private instance of the class TextEditingController to access the methods available to read our text from text field
+  late final TextEditingController _textContent;
   Future<DatabaseNote> createOrUpdateExistingNote(BuildContext context) async {
 
     final widgetNote = context.getArgument<DatabaseNote>();
 
     if(widgetNote!=null){
       _note = widgetNote;
-      _textBody.text =widgetNote.text;
+      _textTitle.text =widgetNote.text;
+      _textContent.text = widgetNote.textContent;
       return widgetNote;
     }
     final existingNote =
@@ -48,7 +49,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
 
   Future<void> _deleteNoteIfTextIsEmpty() async {
     final note = _note; //note is now our DatabaseNote to a User
-    if (_textBody.text.isEmpty && note != null) {
+    if (_textContent.text.isEmpty && note != null) {
       //if text is empty and we have a note
       await _noteService.deleteNote(
           id: note
@@ -58,13 +59,15 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
 
   void _saveNoteIfTextNotEmpty() async {
     final note = _note;
-    final text = _textBody.text;
-    if (note != null && text.isNotEmpty) {
+    final text = _textTitle.text;
+    final textContent = _textContent.text;
+    if (note != null && textContent.isNotEmpty) {
       //if note is not null and text is not empty, then perform the operation below
       await _noteService.updateNote(
         //update note
         note: note,
         text: text,
+        textContent: textContent
       );
     }
   }
@@ -74,8 +77,9 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     //on creating a state we call these
     _noteService =
         NoteService(); //we are creating an instance of NoteService which is a singleton
-    _textBody =
+    _textTitle =
         TextEditingController(); //we are creating an instance of TextEditingController
+    _textContent = TextEditingController();
     super.initState();
   }
 
@@ -84,7 +88,8 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     //on disposing a screen we want to perform the following function and dispose the TextEditingController
     _deleteNoteIfTextIsEmpty();
     _saveNoteIfTextNotEmpty();
-    _textBody.dispose();
+    _textTitle.dispose();
+    _textContent.dispose();
     super.dispose();
   }
 
@@ -93,16 +98,20 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     if (note == null) {
       return;
     }
-    final text = _textBody.text;
+    final text = _textTitle.text;
+    final textContent = _textContent.text;
     await _noteService.updateNote(
       note: note,
       text: text,
+      textContent: textContent
     );
   }
 
   void _setupTextControllerListener() {
-    _textBody.removeListener(_textControllerListener);
-    _textBody.addListener(_textControllerListener);
+    _textTitle.removeListener(_textControllerListener);
+    _textTitle.addListener(_textControllerListener);
+    _textContent.removeListener(_textControllerListener);
+    _textContent.addListener(_textControllerListener);
   }
 
   @override
@@ -133,15 +142,34 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                 child: Column(
                   children: [
                     TextField(
-                      controller: _textBody,
+                      controller: _textTitle,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold
+                      ),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Title',
+                        hintStyle: TextStyle(
+                            color: Colors.black.withOpacity(0.4),
+                            fontSize: 24
+                        ),
+                      ),
+                    ),
+                    TextField(
+                      controller: _textContent,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
+                      style: TextStyle(
+                          fontSize: 20,
+                      ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Start typing into your Note...',
                         hintStyle: TextStyle(
                             color: Colors.black.withOpacity(0.4),
-                            fontStyle: FontStyle.italic),
+                            ),
                       ),
                     ),
                   ],

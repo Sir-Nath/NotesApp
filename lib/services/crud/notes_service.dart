@@ -54,6 +54,7 @@ class NoteService {
     // to update our note we need the previous note and the text to add to it
     required DatabaseNote note,
     required String text,
+    required String textContent
   }) async {
     await _ensureDbIsOpen(); //ensures db is open
     final db =
@@ -66,6 +67,7 @@ class NoteService {
         noteTable,
         {
           textColumn: text,
+          textContentColumn: textContent
         },
         where: 'id = ?',
         whereArgs: [note.id]);
@@ -151,13 +153,15 @@ class NoteService {
     if (dbUser != owner) {
       throw CouldNotFindUser();
     }
-    const text = '';
+    const text = 'Title';
+    const textContent = '';
     final noteId =
-        await db.insert(noteTable, {userIdColumn: owner.id, textColumn: text});
+        await db.insert(noteTable, {userIdColumn: owner.id, textColumn: text, textContentColumn: textContent,});
     final note = DatabaseNote(
       id: noteId,
       userId: owner.id,
       text: text,
+      textContent: textContent
     );
     _notes.add(note);
     _notesStreamController.add(_notes);

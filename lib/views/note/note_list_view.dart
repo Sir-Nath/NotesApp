@@ -27,13 +27,20 @@ class NoteListView extends StatelessWidget {
             onTap: (){
               onTap(note);
             },
-            leading: const Icon(Icons.note),
+            leading: const Icon(Icons.note_alt_rounded),
             title: Text(
               note.text,
               maxLines: 1,
               softWrap: true,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            ),
+            subtitle: Text(
+              note.textContent,
+              maxLines: 1,
+              softWrap: true,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 15, color: Colors.black.withOpacity(0.4))
             ),
             trailing: IconButton(
               onPressed: () async {
