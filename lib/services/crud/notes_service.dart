@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:notes/extension/list/filter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -12,13 +13,13 @@ class NoteService {
   //our database is _db
   Database? _db;
 
-  List<DatabaseNote> _notes = [];//we are creating an empty list which should
+  List<DatabaseNote> _notes = []; //we are creating an empty list which should
   // contain our databaseNote which is a map of string and objects.
 
-
+  DatabaseUser? _user;
   //creating a singleton
   static final NoteService _shared = NoteService._sharedInstance();
-  NoteService._sharedInstance(){
+  NoteService._sharedInstance() {
     //this is a private constructor
     _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
       onListen: () {
@@ -26,42 +27,48 @@ class NoteService {
       },
     );
   }
-   //we instantiate an object _shared which is an instance of the private Constructor
+  //we instantiate an object _shared which is an instance of the private Constructor
   factory NoteService() => _shared;
   //our factory constructor returns the instantiated object
   //singleton: The singleton pattern is a pattern used in object-oriented programming
   // which ensures that a class has only one instance and also provides a global point
   //of access to it. Sometimes it's important for a class to have exactly one instance,
   // or you might force your app into a weird state.
-
-
   late final StreamController<List<DatabaseNote>> _notesStreamController;
-  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream.filter((note){
+    final currentUser = _user;
+    if(currentUser!=null){
+      return note.userId == currentUser.id;
+    }else{
+      throw UserShouldBeSetBeforeReadingAllNote();
+    }
+  });
 
   Future<void> _cacheNotes() async {
     final allNotes = await getAllNotes();
     _notes = allNotes.toList();
     _notesStreamController.add(_notes);
-
   }
 
-  Future<DatabaseNote> updateNote(
-      { // to update our note we need the previous note and the text to add to it
-        required DatabaseNote note,
-        required String text,
-      }) async {
+  Future<DatabaseNote> updateNote({
+    // to update our note we need the previous note and the text to add to it
+    required DatabaseNote note,
+    required String text,
+  }) async {
     await _ensureDbIsOpen(); //ensures db is open
-    final db = _getDatabaseOrThrow(); //either returns db or throws an exception of database not open
+    final db =
+        _getDatabaseOrThrow(); //either returns db or throws an exception of database not open
     // which don't expect to see due to the previous function called
 
     await getNote(id: note.id);
 
-    final updateCount = await db.update(noteTable, {
-      textColumn: text,
-    },
+    final updateCount = await db.update(
+        noteTable,
+        {
+          textColumn: text,
+        },
         where: 'id = ?',
-        whereArgs: [note.id]
-    );
+        whereArgs: [note.id]);
 
     if (updateCount == 0) {
       throw CouldNotUpdateNote();
@@ -75,8 +82,6 @@ class NoteService {
   }
 
   Future<Iterable<DatabaseNote>> getAllNotes() async {
-
-
     final db = _getDatabaseOrThrow();
 
     final notes = await db.query(
@@ -147,17 +152,19 @@ class NoteService {
       throw CouldNotFindUser();
     }
     const text = '';
-    final noteId = await db.insert(noteTable,
-        {userIdColumn: owner.id, textColumn: text});
+    final noteId =
+        await db.insert(noteTable, {userIdColumn: owner.id, textColumn: text});
     final note = DatabaseNote(
-      id: noteId, userId: owner.id, text: text,);
+      id: noteId,
+      userId: owner.id,
+      text: text,
+    );
     _notes.add(note);
     _notesStreamController.add(_notes);
     return note;
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
-
     await _ensureDbIsOpen();
 
     final db = _getDatabaseOrThrow();
@@ -173,6 +180,7 @@ class NoteService {
       return DatabaseUser.fromRow(result.first);
     }
   }
+
   //this function create a User in the userTable
   Future<DatabaseUser> createUser({required String email}) async {
     await _ensureDbIsOpen();
@@ -191,7 +199,7 @@ class NoteService {
     }
     //on inserting a fresh user, an integer ID is returned which then becomes the id of the instance of a DatabaseUser we get back
     final userId =
-    await db.insert(userTable, {emailColumn: email.toLowerCase()});
+        await db.insert(userTable, {emailColumn: email.toLowerCase()});
     return DatabaseUser(id: userId, email: email);
   }
 
@@ -228,7 +236,7 @@ class NoteService {
     try {
       //code syntax for creating database path by joining the application document directory with the file name
       final docsPath =
-      await getApplicationDocumentsDirectory(); // this gets the application directory
+          await getApplicationDocumentsDirectory(); // this gets the application directory
       final dbpath = join(
           docsPath.path, dbName); // this join the directory with the file name
       final db = await openDatabase(dbpath); // this opens the database
@@ -241,16 +249,18 @@ class NoteService {
       await _cacheNotes();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectory(); // this exception is thrown if the database can't be created
+    }
   }
-}
+
   //this function ensure our db is opened
-  Future<void> _ensureDbIsOpen() async{
-    try{
+  Future<void> _ensureDbIsOpen() async {
+    try {
       await open(); //it opens it
-    }on DatabaseAlreadyOpenException{
+    } on DatabaseAlreadyOpenException {
       //upon this exception that it is opened already, we let nothing happens than just leave the database open
     }
-}
+  }
+
   //this function closes a database
   Future<void> close() async {
     final db = _db;
@@ -262,19 +272,24 @@ class NoteService {
     }
   }
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async{
-    try{
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
+    try {
       final user = await getUser(email: email);
+      if(setAsCurrentUser){
+        _user = user;
+      }
       return user;
-    }on CouldNotFindUser{
+    } on CouldNotFindUser {
       final createdUser = await createUser(email: email);
+      if(setAsCurrentUser){
+        _user = createdUser;
+      }
       return createdUser;
-    }catch(e){
+    } catch (e) {
       rethrow;
     }
   }
 }
-
-
-
-
