@@ -48,18 +48,19 @@ class _NotesViewState extends State<NotesView> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(newNoteRoute);
+                Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
               },
               icon: const Icon(Icons.add),
             ),
             PopupMenuButton<MenuAction>(
-              onSelected: (value) async{
-                switch(value){
+              onSelected: (value) async {
+                switch (value) {
                   case MenuAction.logout:
                     final shouldLogout = await showLogoutDialog(context);
-                    if(shouldLogout){
+                    if (shouldLogout) {
                       AuthService.firebase().logout();
-                      Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          loginRoute, (route) => false);
                     }
                     break;
                 }
@@ -91,21 +92,30 @@ class _NotesViewState extends State<NotesView> {
                                 final allNote =
                                     snapshot.data as List<DatabaseNote>;
                                 return NoteListView(
-                                    notes: allNote,
-                                    onDeleteNote: (note) async {
-                                      await _noteService.deleteNote(
-                                        id: note.id,
-                                      );
-                                    });
+                                  notes: allNote,
+                                  onDeleteNote: (note) async {
+                                    await _noteService.deleteNote(
+                                      id: note.id,
+                                    );
+                                  },
+                                  onTap: (DatabaseNote note) {
+                                    Navigator.of(context).pushNamed(
+                                      createOrUpdateNoteRoute,
+                                      arguments: note,
+                                    );
+                                  },
+                                );
                               } else {
-                                return Center(child: const CircularProgressIndicator());
+                                return const Center(
+                                    child: CircularProgressIndicator());
                               }
                             default:
-                              return Center(child: const CircularProgressIndicator());
+                              return const Center(
+                                  child: CircularProgressIndicator());
                           }
                         });
                   default:
-                    return Center(child: const CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                 }
               }),
         ));

@@ -1,10 +1,7 @@
 ///Checking through Firebase console we realize there are more than one authentication provider namely; email & password, google, facebook e.t.c
-///so we need to create a firebaseauthprovider which will be from another class called authprovider,
-///where we state the functionality we expect all authprovider to render to be namely; current user, login, logout, send verification.
-
-
+///so we need to create a firebaseAuthProvider which will be from another class called AuthProvider,
+///where we state the functionality we expect all AuthProvider to render to be namely; current user, login, logout, send verification.
 import 'package:firebase_core/firebase_core.dart';
-
 import '../../firebase_options.dart';
 import 'auth_user.dart';
 import 'auth_provider.dart';
@@ -15,7 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart'
 class FirebaseAuthProvider implements AuthProvider {
 
 
-  //method createUser and login return a type Authuser same as getter currentUser
+  //method createUser and login return a type AuthUser same as getter currentUser
   @override
   Future<AuthUser> createUser({
     required String email,

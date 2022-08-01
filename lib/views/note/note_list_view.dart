@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import '../../services/crud/database_note.dart';
 import '../../utilities/dialogs/delete_dialog.dart';
 
-typedef DeleteNoteCallback = void Function(DatabaseNote note);
+typedef NoteCallback = void Function(DatabaseNote note);
 
 class NoteListView extends StatelessWidget {
-  final DeleteNoteCallback onDeleteNote;
+  final NoteCallback onDeleteNote;
   final List<DatabaseNote> notes;
+  final NoteCallback onTap;
   const NoteListView({
     Key? key,
     required this.notes,
     required this.onDeleteNote,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -22,16 +24,16 @@ class NoteListView extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
+            onTap: (){
+              onTap(note);
+            },
             leading: const Icon(Icons.note),
             title: Text(
               note.text,
               maxLines: 1,
               softWrap: true,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             trailing: IconButton(
               onPressed: () async {
@@ -40,13 +42,12 @@ class NoteListView extends StatelessWidget {
                   onDeleteNote(note);
                 }
               },
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
             ),
             tileColor: Colors.yellow.shade300,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)
-            ),
-            contentPadding: EdgeInsets.symmetric(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            contentPadding: const EdgeInsets.symmetric(
               vertical: 10,
               horizontal: 10,
             ),

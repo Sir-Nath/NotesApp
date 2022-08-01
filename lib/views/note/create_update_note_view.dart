@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:notes/services/auth/auth_service.dart';
-import '../../../services/crud/database_note.dart';
-import '../../../services/crud/notes_service.dart';
+import 'package:notes/utilities/generics/get_arguments.dart';
+import '../../services/crud/database_note.dart';
+import '../../services/crud/notes_service.dart';
 
-class NewNoteView extends StatefulWidget {
-  const NewNoteView({Key? key}) : super(key: key);
+class CreateUpdateNoteView extends StatefulWidget {
+  const CreateUpdateNoteView({Key? key}) : super(key: key);
 
   @override
-  State<NewNoteView> createState() => _NewNoteViewState();
+  State<CreateUpdateNoteView> createState() => _CreateUpdateNoteViewState();
 }
 
-class _NewNoteViewState extends State<NewNoteView> {
+class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   DatabaseNote?
       _note; // calling an instance of DatabaseNote to a private variable
   late final NoteService
@@ -18,7 +19,15 @@ class _NewNoteViewState extends State<NewNoteView> {
   late final TextEditingController
       _textBody; //calling an private instance of the class TextEditingController to access the methods available to read our text from text field
 
-  Future<DatabaseNote> createNewNote() async {
+  Future<DatabaseNote> createOrUpdateExistingNote(BuildContext context) async {
+
+    final widgetNote = context.getArgument<DatabaseNote>();
+
+    if(widgetNote!=null){
+      _note = widgetNote;
+      _textBody.text =widgetNote.text;
+      return widgetNote;
+    }
     final existingNote =
         _note; //existingNote is our DatabaseNote and if it is open then we return it
     if (existingNote != null) {
@@ -30,16 +39,18 @@ class _NewNoteViewState extends State<NewNoteView> {
     final email = currentUser.email!; //retrieving the AuthUser email
     final owner = await _noteService.getUser(
         email: email); //we are getting the DatabaseUser attached to this email
-    return await _noteService.createNote(
+    final newNote = await _noteService.createNote(
         owner:
-            owner); // we are using this DatabaseUser detail to create a new DatabaseNote
+            owner);
+    _note = newNote;
+    return newNote;// we are using this DatabaseUser detail to create a new DatabaseNote
   }
 
-  void _deleteNoteIfTextIsEmpty() {
+  Future<void> _deleteNoteIfTextIsEmpty() async {
     final note = _note; //note is now our DatabaseNote to a User
     if (_textBody.text.isEmpty && note != null) {
       //if text is empty and we have a note
-      _noteService.deleteNote(
+      await _noteService.deleteNote(
           id: note
               .id); //we are deleting the note attached to the id of the DatabaseNote
     }
@@ -108,12 +119,11 @@ class _NewNoteViewState extends State<NewNoteView> {
         ),
       ),
       body: FutureBuilder(
-        future: createNewNote(),
+        future: createOrUpdateExistingNote(context),
         builder: (context, snapshot) {
           //we got here in our code
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              _note = snapshot.data as DatabaseNote?;
               _setupTextControllerListener();
               return Padding(
                 padding: const EdgeInsets.symmetric(
@@ -127,17 +137,20 @@ class _NewNoteViewState extends State<NewNoteView> {
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Start typing into your Note...',
-                          hintStyle: TextStyle(
-                              color: Colors.black.withOpacity(0.4),
-                              fontStyle: FontStyle.italic)),
+                        border: InputBorder.none,
+                        hintText: 'Start typing into your Note...',
+                        hintStyle: TextStyle(
+                            color: Colors.black.withOpacity(0.4),
+                            fontStyle: FontStyle.italic),
+                      ),
                     ),
                   ],
                 ),
               );
             default:
-              return Center(child: const CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
           }
         },
       ),

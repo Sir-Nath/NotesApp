@@ -11,7 +11,7 @@ class DatabaseNote {
   final String text;
 
 //our constructor
-  DatabaseNote(
+  const DatabaseNote(
       {required this.id,
         required this.userId,
         required this.text,

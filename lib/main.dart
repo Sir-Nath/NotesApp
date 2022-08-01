@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes/constants/route.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/views/login_view.dart';
-import 'package:notes/views/note/components/new_note.dart';
+import 'package:notes/views/note/create_update_note_view.dart';
 import 'package:notes/views/note/note_screen.dart';
 import 'package:notes/views/register_view.dart';
 import 'package:notes/views/verify_email_view.dart';
@@ -22,8 +22,7 @@ void main() {
         registerRoute: (context) => const RegisterView(),
         noteRoute: (context) => const NotesView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
-        newNoteRoute: (context) => const NewNoteView()
-
+        createOrUpdateNoteRoute: (context) => const CreateUpdateNoteView()
       },
     ),
   );
@@ -35,30 +34,28 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: AuthService.firebase().initialise(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              final user = AuthService.firebase().currentUser;
-              if (user != null) {
-                if (user.isEmailVerified) {
-                  return const NotesView();
-                } else {
-                  return const VerifyEmailView();
-                }
+      future: AuthService.firebase().initialise(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            final user = AuthService.firebase().currentUser;
+            if (user != null) {
+              if (user.isEmailVerified) {
+                return const NotesView();
               } else {
-                return const LoginView();
+                return const VerifyEmailView();
               }
-            default:
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-          }
-        });
+            } else {
+              return const LoginView();
+            }
+          default:
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+        }
+      },
+    );
   }
 }
-
-
-
