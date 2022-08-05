@@ -43,6 +43,8 @@ dependencies:
   path: ^1.8.1
   google_fonts: ^3.0.1
   share_plus: ^4.0.10
+  bloc: ^8.0.3
+  flutter_bloc: ^8.0.1
 
 dev_dependencies:
   flutter_test:

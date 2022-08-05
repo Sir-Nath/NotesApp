@@ -141,7 +141,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                 Share.share(textContent);
               }
             },
-            icon: Icon(Icons.share_outlined),
+            icon: const Icon(Icons.share_outlined),
           )
         ],
       ),
@@ -163,7 +163,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                       controller: _textTitle,
                       maxLines: 1,
                       style:
-                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Title',
@@ -175,7 +175,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                       controller: _textContent,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                       ),
                       decoration: InputDecoration(
@@ -190,8 +190,17 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                 ),
               );
             default:
-              return const Center(
-                child: CircularProgressIndicator(),
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text('fetching your notes...'),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    CircularProgressIndicator(),
+                  ],
+                ),
               );
           }
         },

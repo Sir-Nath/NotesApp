@@ -37,80 +37,97 @@ class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          foregroundColor: Colors.black,
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            'Note',
-            style:
-                TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 18),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
-              },
-              icon: const Icon(Icons.add),
-            ),
-            PopupMenuButton<MenuAction>(
-              onSelected: (value) async {
-                switch (value) {
-                  case MenuAction.logout:
-                    final shouldLogout = await showLogoutDialog(context);
-                    if (shouldLogout) {
-                      AuthService.firebase().logout();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          loginRoute, (route) => false);
-                    }
-                    break;
-                }
-              },
-              itemBuilder: (context) {
-                return [
-                  const PopupMenuItem<MenuAction>(
-                    value: MenuAction.logout,
-                    child: Text('Log Out'),
-                  ),
-                ];
-              },
-            )
-          ],
+      appBar: AppBar(
+        foregroundColor: Colors.black,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Note',
+          style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 18),
         ),
-        body: Padding(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
+            },
+            icon: const Icon(Icons.add),
+          ),
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              switch (value) {
+                case MenuAction.logout:
+                  final shouldLogout = await showLogoutDialog(context);
+                  if (shouldLogout) {
+                    AuthService.firebase().logout();
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                  }
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem<MenuAction>(
+                  value: MenuAction.logout,
+                  child: Text('Log Out'),
+                ),
+              ];
+            },
+          )
+        ],
+      ),
+      body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           child: StreamBuilder(
-              stream: _noteService.allNotes(ownerUserId: userId),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.active:
-                    if (snapshot.hasData) {
-                      final allNote =
-                      snapshot.data as Iterable<CloudNote>;
-                      return NoteListView(
-                        notes: allNote,
-                        onDeleteNote: (note) async {
-                          await _noteService.deleteNote(
-                           documentId: note.documentId,
-                          );
-                        },
-                        onTap: (CloudNote note) {
-                          Navigator.of(context).pushNamed(
-                            createOrUpdateNoteRoute,
-                            arguments: note,
-                          );
-                        },
-                      );
-                    } else {
-                      return const Center(
-                          child: CircularProgressIndicator());
-                    }
-                  default:
-                    return const Center(
-                        child: CircularProgressIndicator());
-                }
-              },)
-        ),);
+            stream: _noteService.allNotes(ownerUserId: userId),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.active:
+                  if (snapshot.hasData) {
+                    final allNote = snapshot.data as Iterable<CloudNote>;
+                    return NoteListView(
+                      notes: allNote,
+                      onDeleteNote: (note) async {
+                        await _noteService.deleteNote(
+                          documentId: note.documentId,
+                        );
+                      },
+                      onTap: (CloudNote note) {
+                        Navigator.of(context).pushNamed(
+                          createOrUpdateNoteRoute,
+                          arguments: note,
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: Column(
+                        children: const [
+                          Text('fetching your notes...'),
+                          SizedBox(
+                            height: 50,
+                          ),
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  }
+                default:
+                  return Center(
+                    child: Column(
+                      children: const [
+                        Text('fetching your notes...'),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
+                  );
+              }
+            },
+          )),
+    );
   }
 }

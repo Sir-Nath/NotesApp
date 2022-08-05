@@ -14,6 +14,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  late bool isVisible = false;
 
   @override
   void initState() {
@@ -80,14 +81,29 @@ class _LoginViewState extends State<LoginView> {
               height: 30,
             ),
             TextField(
-              obscureText: true,
+              obscureText: isVisible,
               autocorrect: false,
               enableSuggestions: false,
               controller: _password,
               decoration: InputDecoration(
                 labelText: 'Password',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    if (isVisible == true) {
+                      setState(() {
+                        isVisible = false;
+                      });
+                    } else {
+                      setState(() {
+                        isVisible = true;
+                      });
+                    }
+                  },
+                  icon: isVisible ? const Icon(
+                    Icons.visibility
+                  ) : const Icon(Icons.visibility_off),
+                ),
                 hintText: 'input your password here',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(29),
@@ -108,8 +124,8 @@ class _LoginViewState extends State<LoginView> {
                   //the currentUser getter returns a AuthUser? type
                   final user = await AuthService.firebase().currentUser;
                   if (user?.isEmailVerified ?? false) {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        noteRoute, (route) => false);
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(noteRoute, (route) => false);
                   } else {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                         verifyEmailRoute, (route) => false);
@@ -123,25 +139,26 @@ class _LoginViewState extends State<LoginView> {
                 }
               },
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 width: 350,
+                decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(29)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(29),
-                  child: Center(
-                    child: const Text(
+                  child: const Center(
+                    child: Text(
                       'Login',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
                 ),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(29)
-                ),
               ),
             ),
-            SizedBox( height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
             GestureDetector(
               onTap: () {
                 Navigator.of(context)
@@ -155,7 +172,7 @@ class _LoginViewState extends State<LoginView> {
                           color: Colors.black.withOpacity(0.6), fontSize: 12)),
                   const TextSpan(
                       text: ' Register here',
-                      style: const TextStyle(color: Colors.blue, fontSize: 13))
+                      style: TextStyle(color: Colors.blue, fontSize: 13))
                 ]),
               ),
             )
