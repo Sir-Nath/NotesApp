@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:notes/services/cloud/cloud_storage_constants.dart';
 
 @immutable
+//every note going to the cloud will have it main contents which in this case is the textTitle, textContent and ownerUserId,
+//the document Id is the primary key of the cloud storage
 class CloudNote {
   final String documentId;
   final String ownerUserId;
@@ -16,9 +18,11 @@ class CloudNote {
   });
 
   //QueryDocumentSnapshot
+  //the is a named constructor that takes a QueryDocumentSnapshot of a map.
+  //this constructor returns an instance of our CloudNote
   CloudNote.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : documentId = snapshot.id,
-        ownerUserId = snapshot.data()[ownerUserIdFieldName],
+        ownerUserId = snapshot.data()[ownerUserIdFieldName] as String,
         textTitle = snapshot.data()[textTitleFieldName] as String,
         textContent = snapshot.data()[textContentFieldName] as String;
 }
