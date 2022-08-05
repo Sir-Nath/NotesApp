@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     keyboardType: TextInputType.number,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Row(
@@ -142,6 +142,12 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 }
+
+
+//since bloc works with event and state, we will need to create a class for both
+//and a central bloc class
+//there are two states we are concerned about in this counter app namely; invalid and valid state
+//we create an abstract class from which the states and events class will extend from
 
 @immutable
 abstract class CounterState {
@@ -180,10 +186,14 @@ class DecrementEvent extends CounterEvent {
 }
 
 class CounterBloc extends Bloc<CounterEvent, CounterState> {
+  //we must instantiate an initial value which in case is a state displaying 0
   CounterBloc() : super(const CounterStateValid(0)) {
+    //on sending an increment event to bloc, we want to first try to parse whatever
+    //value into an integer. if successful, we want to go for valid state else invalid state
     on<IncrementEvent>((event, emit) {
       final integer = int.tryParse(event.value);
       if (integer == null) {
+        //we use emit to send a state to the UI
         emit(
           CounterStateInvalid(
             invalidValue: event.value,
