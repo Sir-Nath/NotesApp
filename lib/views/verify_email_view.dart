@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/constants/route.dart';
 import 'package:notes/services/auth/auth_service.dart';
+import 'package:notes/services/auth/bloc/auth_event.dart';
+
+import '../services/auth/bloc/auth_bloc.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({Key? key}) : super(key: key);
@@ -29,7 +33,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 30,),
+            const SizedBox(height: 30,),
             Text('we have already sent a verification email \n please check you email and verify',
               style: TextStyle(
                   color: Colors.black.withOpacity(0.6),
@@ -37,16 +41,21 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 30,),
-            Container(
+            const SizedBox(height: 30,),
+            SizedBox(
               width: 350,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: TextButton(
                     onPressed: () async {
-                      final user = AuthService.firebase().currentUser;
-                      AuthService.firebase().sendEmailVerification();
+                 context.read<AuthBloc>().add(const AuthEventSendEmailVerification());
                     },
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(Colors.blue),
+                ),
                     child: const Text(
                   'Resend Mail',
                   style: TextStyle(
@@ -54,25 +63,24 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     color: Colors.white,
                   ),
                 ),
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                  ),
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                ),
                 ),
               ),
             ),
-            SizedBox(height: 30,),
-            Container(
+            const SizedBox(height: 30,),
+            SizedBox(
               width: 350,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: TextButton(
                     onPressed: () async {
-                      AuthService.firebase().logout();
-                      Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                    context.read<AuthBloc>().add(const AuthEventLogOut());
                     },
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                  ),
                     child: const Text(
                       'Go back to Login',
                       style: TextStyle(
@@ -80,12 +88,6 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                         color: Colors.white,
                       ),
                     ),
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.all(
-                      EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                    ),
-                    backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  ),
               ),
             ),
         ),
