@@ -7,6 +7,7 @@ import 'auth_user.dart';
 import 'auth_provider.dart';
 import 'auth_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart'
+
     show FirebaseAuth, FirebaseAuthException;
 
 class FirebaseAuthProvider implements AuthProvider {
@@ -109,6 +110,5 @@ class FirebaseAuthProvider implements AuthProvider {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    throw UnimplementedError();
   }
 }
