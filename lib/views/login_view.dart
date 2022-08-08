@@ -4,6 +4,7 @@ import 'package:notes/constants/route.dart';
 import 'package:notes/services/auth/auth_exception.dart';
 import 'package:notes/services/auth/bloc/auth_bloc.dart';
 import 'package:notes/services/auth/bloc/auth_event.dart';
+import '../services/auth/bloc/auth_state.dart';
 import '../utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -102,9 +103,9 @@ class _LoginViewState extends State<LoginView> {
                       });
                     }
                   },
-                  icon: isVisible ? const Icon(
-                    Icons.visibility
-                  ) : const Icon(Icons.visibility_off),
+                  icon: isVisible
+                      ? const Icon(Icons.visibility)
+                      : const Icon(Icons.visibility_off),
                 ),
                 hintText: 'input your password here',
                 border: OutlineInputBorder(
@@ -115,33 +116,43 @@ class _LoginViewState extends State<LoginView> {
             const SizedBox(
               height: 30,
             ),
-            GestureDetector(
-              onTap: () async {
-                final email = _email.text;
-                final password = _password.text;
-                try {
-                 context.read<AuthBloc>().add(AuthEventLogIn(email, password,),);
-                } on UserNotFoundAuthException {
-                  await showErrorDialog(context, 'User not found');
-                } on WrongPasswordAuthException {
-                  await showErrorDialog(context, 'wrong password');
-                } on GenericAuthException {
-                  await showErrorDialog(context, 'Authentication error');
+            BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) async {
+                if (state is AuthStateLoggedOut) {
+                  if (state.exception is UserNotFoundAuthException) {
+                    await showErrorDialog(context, 'user not found');
+                  } else if (state.exception is WrongPasswordAuthException) {
+                    await showErrorDialog(context, 'Wrong credentials');
+                  } else if (state.exception is GenericAuthException) {
+                    await showErrorDialog(context, 'Authentication error');
+                  }
                 }
               },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                width: 350,
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(29)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(29),
-                  child: const Center(
-                    child: Text(
-                      'Login',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+              child: GestureDetector(
+                onTap: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                  context.read<AuthBloc>().add(
+                        AuthEventLogIn(
+                          email,
+                          password,
+                        ),
+                      );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  width: 350,
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(29)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(29),
+                    child: const Center(
+                      child: Text(
+                        'Login',
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
