@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:notes/constants/route.dart';
-import 'package:notes/services/auth/auth_service.dart';
-import 'package:notes/services/auth/bloc/auth_bloc.dart';
-import 'package:notes/services/auth/bloc/auth_event.dart';
-import 'package:notes/services/cloud/cloud_note.dart';
-import 'package:notes/services/cloud/firebase_cloud_storage.dart';
-//import 'package:notes/services/crud/notes_service.dart';
-import 'package:notes/views/note/note_list_view.dart';
-import '../../enums/menu_action.dart';
-//import '../../services/crud/database_note.dart';
+import 'package:notes/constants/routes/route.dart';
+import 'package:notes/data/repository/auth/auth_service.dart';
+import 'package:notes/bloc/auth/auth_bloc.dart';
+import 'package:notes/data/model/cloud/cloud_note.dart';
+import 'package:notes/data/repository/cloud/firebase_cloud_storage.dart';
+import 'package:notes/views/note_screen/note_list_view.dart';
+import '../../bloc/auth/auth_event.dart';
+import '../../constants/enums/menu_action.dart';
 import '../../utilities/dialogs/logout_dialog.dart';
+
+
 
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
@@ -36,7 +36,6 @@ class _NotesViewState extends State<NotesView> {
   //   _noteService.close();
   //   super.dispose();
   // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,42 +77,29 @@ class _NotesViewState extends State<NotesView> {
         ],
       ),
       body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          child: StreamBuilder(
-            stream: _noteService.allNotes(ownerUserId: userId),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.active:
-                  if (snapshot.hasData) {
-                    final allNote = snapshot.data as Iterable<CloudNote>;
-                    return NoteListView(
-                      notes: allNote,
-                      onDeleteNote: (note) async {
-                        await _noteService.deleteNote(
-                          documentId: note.documentId,
-                        );
-                      },
-                      onTap: (CloudNote note) {
-                        Navigator.of(context).pushNamed(
-                          createOrUpdateNoteRoute,
-                          arguments: note,
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(
-                      child: Column(
-                        children: const [
-                          Text('fetching your notes...'),
-                          SizedBox(
-                            height: 50,
-                          ),
-                          CircularProgressIndicator(),
-                        ],
-                      ),
-                    );
-                  }
-                default:
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        child: StreamBuilder(
+          stream: _noteService.allNotes(ownerUserId: userId),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.active:
+                if (snapshot.hasData) {
+                  final allNote = snapshot.data as Iterable<CloudNote>;
+                  return NoteListView(
+                    notes: allNote,
+                    onDeleteNote: (note) async {
+                      await _noteService.deleteNote(
+                        documentId: note.documentId,
+                      );
+                    },
+                    onTap: (CloudNote note) {
+                      Navigator.of(context).pushNamed(
+                        createOrUpdateNoteRoute,
+                        arguments: note,
+                      );
+                    },
+                  );
+                } else {
                   return Center(
                     child: Column(
                       children: const [
@@ -125,9 +111,23 @@ class _NotesViewState extends State<NotesView> {
                       ],
                     ),
                   );
-              }
-            },
-          )),
+                }
+              default:
+                return Center(
+                  child: Column(
+                    children: const [
+                      Text('fetching your notes...'),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                );
+            }
+          },
+        ),
+      ),
     );
   }
 }

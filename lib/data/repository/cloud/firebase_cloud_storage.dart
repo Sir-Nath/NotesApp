@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:notes/services/cloud/cloud_note.dart';
-import 'package:notes/services/cloud/cloud_storage_constants.dart';
-import 'package:notes/services/cloud/cloud_storage_exception.dart';
+import 'package:notes/data/model/cloud/cloud_note.dart';
+import 'package:notes/constants/strings_constants/cloud/cloud_storage_constants.dart';
+import 'package:notes/constants/exception/cloud/cloud_storage_exception.dart';
 
 class FirebaseCloudStorage {
   //we are instantiating our note from cloud to the variable notes

@@ -1,7 +1,7 @@
 ///AuthProvider is like a contract that any FirebaseAuthProvider...
 ///...must conform to the functionality stated here
 
-import 'auth_user.dart';
+import '../../model/auth/auth_user.dart';
 
 abstract class AuthProvider {
   //this is a getter that allow us to get the current user from firebase

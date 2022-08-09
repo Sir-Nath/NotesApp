@@ -1,6 +1,6 @@
-import 'package:notes/services/auth/auth_exception.dart';
-import 'package:notes/services/auth/auth_provider.dart';
-import 'package:notes/services/auth/auth_user.dart';
+import 'package:notes/constants/exception/auth/auth_exception.dart';
+import 'package:notes/data/provider/auth/auth_provider.dart';
+import 'package:notes/data/model/auth/auth_user.dart';
 import "package:test/test.dart";
 
 //study dependency injection

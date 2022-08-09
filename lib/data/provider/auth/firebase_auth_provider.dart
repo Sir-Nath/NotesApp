@@ -2,10 +2,10 @@
 ///so we need to create a firebaseAuthProvider which will be from another class called AuthProvider,
 ///where we state the functionality we expect all AuthProvider to render to be namely; current user, login, logout, send verification.
 import 'package:firebase_core/firebase_core.dart';
-import '../../firebase_options.dart';
-import 'auth_user.dart';
+import '../../../firebase_options.dart';
+import '../../model/auth/auth_user.dart';
 import 'auth_provider.dart';
-import 'auth_exception.dart';
+import '../../../constants/exception/auth/auth_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart'
 
     show FirebaseAuth, FirebaseAuthException;

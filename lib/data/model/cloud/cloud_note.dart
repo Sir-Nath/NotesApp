@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:notes/services/cloud/cloud_storage_constants.dart';
+import 'package:notes/constants/strings_constants/cloud/cloud_storage_constants.dart';
 
 @immutable
 //every note going to the cloud will have it main contents which in this case is the textTitle, textContent and ownerUserId,

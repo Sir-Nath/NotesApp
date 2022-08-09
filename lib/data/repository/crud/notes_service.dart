@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:notes/extension/list/filter.dart';
+import 'package:notes/constants/extension/list/filter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
-import 'crud_constants.dart';
-import 'crud_exception.dart';
-import 'database_note.dart';
-import 'database_user.dart';
+import '../../../constants/strings_constants/crud/crud_constants.dart';
+import '../../../constants/exception/crud/crud_exception.dart';
+import '../../model/crud/database_note.dart';
+import '../../model/crud/database_user.dart';
 
 class NoteService {
   //we create an instance of the Database from package SQlite

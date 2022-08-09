@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:notes/services/auth/auth_service.dart';
+import 'package:notes/data/repository/auth/auth_service.dart';
 import 'package:notes/utilities/generics/get_arguments.dart';
 import 'package:share_plus/share_plus.dart';
 //import '../../services/crud/database_note.dart';
 //import '../../services/crud/notes_service.dart';
-import '../../services/cloud/cloud_note.dart';
+import '../../data/model/cloud/cloud_note.dart';
 //import '../../services/cloud/cloud_storage_exception.dart';
-import '../../services/cloud/firebase_cloud_storage.dart';
+import '../../data/repository/cloud/firebase_cloud_storage.dart';
 import '../../utilities/dialogs/cannot_share_empty_note_dialog.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {

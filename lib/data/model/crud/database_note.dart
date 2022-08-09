@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'crud_constants.dart';
+import '../../../constants/strings_constants/crud/crud_constants.dart';
 import 'database_user.dart';
 
 @immutable
