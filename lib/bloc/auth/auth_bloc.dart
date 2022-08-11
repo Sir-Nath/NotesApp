@@ -92,7 +92,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         }
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(exception: e, isLoading: false));
+        emit(
+          AuthStateLoggedOut(exception: e, isLoading: false),
+        );
       }
     });
 
@@ -100,10 +102,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventLogOut>((event, emit) async {
       try {
         await provider.logout();
-        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+        emit(
+          const AuthStateLoggedOut(exception: null, isLoading: false),
+        );
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(exception: e, isLoading: false));
+        emit(
+          AuthStateLoggedOut(exception: e, isLoading: false),
+        );
       }
+    });
+
+    on<AuthEventForgotPassword>((event, emit) async {
+      emit(const AuthStateForgotPassword(
+        exception: null,
+        hasSentEmail: false,
+        isLoading: false,
+      ));
+      final email = event.email;
+      if (email == null) {
+        return; //user just went to forgot password but did nothing
+      }
+      //user really forgot password and need to get it back
+      emit(const AuthStateForgotPassword(
+        exception: null,
+        hasSentEmail: false,
+        isLoading: true,
+      ));
+      bool didSendEmail;
+      Exception? exception;
+      try {
+        await provider.sendPasswordReset(toEmail: email);
+        didSendEmail = true;
+        exception = null;
+      } on Exception catch (e) {
+        didSendEmail = false;
+        exception = e;
+      }
+      emit(AuthStateForgotPassword(
+        exception: exception,
+        hasSentEmail: didSendEmail,
+        isLoading: false,
+      ));
+    });
+    on<AuthEventShouldRegister>((event, emit) {
+      emit(const AuthStateRegistering(
+        exception: null,
+        isLoading: false,
+      ));
     });
   }
 }
