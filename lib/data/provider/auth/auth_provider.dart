@@ -8,16 +8,15 @@ abstract class AuthProvider {
   //this abstract class of AuthProvider must be able to allow us to get the currentUser
   AuthUser? get currentUser;
 
+  //a register
+  Future<AuthUser> createUser({
+    required String email,
+    required String password,
+    required String name
+  });
 
   //a login
   Future<AuthUser> login({
-    required String email,
-
-    required String password,
-  });
-
-  //a register
-  Future<AuthUser> createUser({
     required String email,
     required String password,
   });

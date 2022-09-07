@@ -4,6 +4,7 @@ import '../../model/auth/auth_user.dart';
 
 //when AuthService is called which takes a provider as a variable,
 // it delegates it responsibility to the provider.
+//this is the repository where we access he users.
 class AuthService implements AuthProvider {
   final AuthProvider provider;
 
@@ -21,10 +22,12 @@ class AuthService implements AuthProvider {
   Future<AuthUser> createUser({
     required String email,
     required String password,
+    required String name
   }) =>
       provider.createUser(
         email: email,
         password: password,
+        name: name,
       );
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:notes/constants/routes/route.dart';
 import 'package:notes/data/repository/auth/auth_service.dart';
 import 'package:notes/bloc/auth/auth_bloc.dart';
@@ -9,8 +10,6 @@ import 'package:notes/views/note_screen/note_list_view.dart';
 import '../../bloc/auth/auth_event.dart';
 import '../../constants/enums/menu_action.dart';
 import '../../utilities/dialogs/logout_dialog.dart';
-
-
 
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
@@ -38,23 +37,28 @@ class _NotesViewState extends State<NotesView> {
   // }
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: height * 0.15,
         foregroundColor: Colors.black,
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          'Note',
-          style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 18),
+        leading:  IconButton(
+          onPressed: (){
+            context.read<AuthBloc>().add(const AuthEventInitialize());
+          },
+          icon: const Icon(
+          Icons.arrow_back,
+          ),
+        ),
+        title: const Text(
+          'My Notes',
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 32),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
-            },
-            icon: const Icon(Icons.add),
-          ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -78,54 +82,111 @@ class _NotesViewState extends State<NotesView> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        child: StreamBuilder(
-          stream: _noteService.allNotes(ownerUserId: userId),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.active:
-                if (snapshot.hasData) {
-                  final allNote = snapshot.data as Iterable<CloudNote>;
-                  return NoteListView(
-                    notes: allNote,
-                    onDeleteNote: (note) async {
-                      await _noteService.deleteNote(
-                        documentId: note.documentId,
+        child: Stack(
+          children: [
+
+            StreamBuilder(
+              stream: _noteService.allNotes(ownerUserId: userId),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.active:
+                    if (snapshot.hasData) {
+                      final allNote = snapshot.data as Iterable<CloudNote>;
+                      if (allNote.isEmpty) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: width,
+                              height: width * 0.5,
+                              child:
+                                  SvgPicture.asset('assets/svgs/Empty box.svg'),
+                            ),
+                            const Text(
+                              'Your Notepad is Empty',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height: width * 0.05,
+                            ),
+                            const Text(
+                              'Tap the button below to start creating a \n'
+                              'note. Once you create a note, it will \n'
+                              'appear here',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            )
+                          ],
+                        );
+                      }
+                      return NoteListView(
+                        notes: allNote,
+                        onDeleteNote: (note) async {
+                          await _noteService.deleteNote(
+                            documentId: note.documentId,
+                          );
+                        },
+                        onTap: (CloudNote note) {
+                          Navigator.of(context).pushNamed(
+                            createOrUpdateNoteRoute,
+                            arguments: note,
+                          );
+                        },
                       );
-                    },
-                    onTap: (CloudNote note) {
-                      Navigator.of(context).pushNamed(
-                        createOrUpdateNoteRoute,
-                        arguments: note,
-                      );
-                    },
-                  );
-                } else {
-                  return Center(
-                    child: Column(
-                      children: const [
-                        Text('fetching your notes...'),
-                        SizedBox(
-                          height: 50,
+                    } else {
+                      return Center(
+                        child: Column(
+                          children: const [
+                            Text('fetching your notes...'),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            CircularProgressIndicator(),
+                          ],
                         ),
-                        CircularProgressIndicator(),
-                      ],
-                    ),
-                  );
-                }
-              default:
-                return Center(
-                  child: Column(
-                    children: const [
-                      Text('fetching your notes...'),
-                      SizedBox(
-                        height: 50,
+                      );
+                    }
+                  default:
+                    return Center(
+                      child: Column(
+                        children: const [
+                          Text('fetching your notes...'),
+                          SizedBox(
+                            height: 50,
+                          ),
+                          CircularProgressIndicator(),
+                        ],
                       ),
-                      CircularProgressIndicator(),
-                    ],
+                    );
+                }
+              },
+            ),
+            Positioned(
+                bottom: 50,
+                left: width * 0.5 - 48,
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                      color: const Color(0xff3454CC),
+                      borderRadius: BorderRadius.circular(28)
                   ),
-                );
-            }
-          },
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+            ),
+          ],
         ),
       ),
     );

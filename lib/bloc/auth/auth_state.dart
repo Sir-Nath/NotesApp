@@ -4,14 +4,17 @@ import '../../../data/model/auth/auth_user.dart';
 
 @immutable
 abstract class AuthState {
+  //all state should have a loading parameter with loading text
   final bool isLoading;
   final String? loadingText;
   const AuthState({
     required this.isLoading,
+    //default loading text is please wait a moment
     this.loadingText = 'please wait a moment',
   });
 }
 
+//to log in, i need auth user
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
   const AuthStateLoggedIn({
@@ -66,5 +69,10 @@ class AuthStateForgotPassword extends AuthState {
     required this.exception,
     required this.hasSentEmail,
     required bool isLoading,
-  }): super(isLoading: isLoading);
+  }) : super(isLoading: isLoading);
+}
+
+class AuthStateNotePage extends AuthState {
+  const AuthStateNotePage({required bool isLoading})
+      : super(isLoading: isLoading);
 }

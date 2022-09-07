@@ -16,10 +16,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventRegister>((event, emit) async {
       final email = event.email;
       final password = event.password;
+      final name = event.name;
       try {
         await provider.createUser(
           email: email,
           password: password,
+          name: name
         );
         await provider.sendEmailVerification();
         emit(
@@ -149,6 +151,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         exception: null,
         isLoading: false,
       ));
+    });
+    on<AuthEventGoToNotes>((event,emit){
+      emit(const AuthStateNotePage(isLoading: false));
     });
   }
 }

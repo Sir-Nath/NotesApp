@@ -15,7 +15,7 @@ Future<T?> showGenericDialog<T>({
         return AlertDialog(
           title: Text(title),
           content: Text(content),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
           actions: options.keys.map((optionTitle){
             final T value = options[optionTitle];
             return TextButton(onPressed: (){
@@ -25,7 +25,7 @@ Future<T?> showGenericDialog<T>({
                 Navigator.of(context).pop();
               }
             },
-            child: Text(optionTitle));
+            child: Text(optionTitle),);
           }).toList(),
         );
       },

@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-
 import '../../../constants/strings_constants/crud/crud_constants.dart';
 
 //this is similar to the Note database class

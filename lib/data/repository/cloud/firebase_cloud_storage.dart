@@ -53,7 +53,9 @@ class FirebaseCloudStorage {
   }
 
   Stream<Iterable<CloudNote>> allNotes({required String ownerUserId}) {
-    return notes.snapshots().map(
+    return notes
+        .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
+        .snapshots().map(
           (event) => event.docs.map(
             //as at here we have all the available documents
             (doc) {
@@ -61,10 +63,11 @@ class FirebaseCloudStorage {
               //we are going to get an instance of CloudNote with the help of the constructor below
               return CloudNote.fromSnapshot(doc);
             },
-          ).where((note) => note.ownerUserId == ownerUserId),
+          )
         );
   }
 
+  //we are not using this function at all so i could just remove it but will let it be
   Future<Iterable<CloudNote>> getNotes({required String ownerUserId}) async {
     try {
       return await notes

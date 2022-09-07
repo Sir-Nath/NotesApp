@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:notes/data/model/cloud/cloud_note.dart';
 import 'package:notes/data/model/cloud/cloud_note.dart';
 import '../../data/model/crud/database_note.dart';
@@ -24,12 +25,11 @@ class NoteListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final note = notes.elementAt(index);
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 0),
           child: ListTile(
-            onTap: (){
+            onTap: () {
               onTap(note);
             },
-            leading: const Icon(Icons.note_alt_rounded),
             title: Text(
               note.textTitle,
               maxLines: 1,
@@ -41,25 +41,28 @@ class NoteListView extends StatelessWidget {
               note.textContent,
               maxLines: 1,
               softWrap: true,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 15, color: Colors.black.withOpacity(0.4))
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black.withOpacity(0.4),
+              ),
             ),
-            trailing: IconButton(
-              onPressed: () async {
-                final shouldDelete = await showDeleteDialog(context);
-                if (shouldDelete) {
-                  onDeleteNote(note);
-                }
-              },
-              icon: const Icon(Icons.delete),
+            trailing: GestureDetector(
+              onTap: () async {
+            final shouldDelete = await showDeleteDialog(context);
+            if (shouldDelete) {
+            onDeleteNote(note);
+            }
+            },
+              child: SvgPicture.asset(
+                'assets/svgs/Delete.svg',
+
+              ),
             ),
-            tileColor: Colors.yellow.shade300,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 10,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
+
           ),
         );
       },

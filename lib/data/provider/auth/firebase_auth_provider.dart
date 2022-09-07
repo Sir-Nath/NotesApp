@@ -1,6 +1,7 @@
 ///Checking through Firebase console we realize there are more than one authentication provider namely; email & password, google, facebook e.t.c
 ///so we need to create a firebaseAuthProvider which will be from another class called AuthProvider,
 ///where we state the functionality we expect all AuthProvider to render to be namely; current user, login, logout, send verification.
+///this is a email-password provider
 import 'package:firebase_core/firebase_core.dart';
 import '../../../firebase_options.dart';
 import '../../model/auth/auth_user.dart';
@@ -10,17 +11,33 @@ import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
 
 class FirebaseAuthProvider implements AuthProvider {
+
+  @override
+  AuthUser? get currentUser {
+    //final name = FirebaseAuth.inst
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return AuthUser.fromFirebase(user);
+      //this return statement will return an instance of the AuthUser with a bool parameter which depends on the input user
+    } else {
+      return null;
+    }
+  }
+
+
   //method createUser and login return a type AuthUser same as getter currentUser
   @override
   Future<AuthUser> createUser({
     required String email,
     required String password,
+    required String name
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      result.user!.updateDisplayName(name);
       final user = currentUser;
       if (user != null) {
         return user;
@@ -42,16 +59,6 @@ class FirebaseAuthProvider implements AuthProvider {
     }
   }
 
-  @override
-  AuthUser? get currentUser {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      return AuthUser.fromFirebase(user);
-      //this return statement will return an instance of the AuthUser with a bool parameter which depends on the input user
-    } else {
-      return null;
-    }
-  }
 
   @override
   Future<AuthUser> login({
