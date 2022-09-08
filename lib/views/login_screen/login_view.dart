@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/constants/exception/auth/auth_exception.dart';
 import 'package:notes/bloc/auth/auth_bloc.dart';
+// ignore: unused_import
 import 'package:notes/utilities/dialogs/loading_dialog.dart';
 import '../../bloc/auth/auth_event.dart';
 import '../../bloc/auth/auth_state.dart';

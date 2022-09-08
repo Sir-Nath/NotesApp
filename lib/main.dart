@@ -3,23 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/constants/routes/route.dart';
 import 'package:notes/bloc/auth/auth_bloc.dart';
 import 'package:notes/data/provider/auth/firebase_auth_provider.dart';
-import 'package:notes/views/forgot_password_screen/forgot_password_screen.dart';
 import 'package:notes/views/forgot_password_screen/forgot_password_screen_page.dart';
 import 'package:notes/views/login_screen/login_screen_page.dart';
-import 'package:notes/views/login_screen/login_view.dart';
 import 'package:notes/views/note_screen/create_update_note_view.dart';
-import 'package:notes/views/note_screen/my_notes_page.dart';
 import 'package:notes/views/note_screen/note_screen.dart';
 import 'package:notes/views/note_screen/note_todo_create.dart';
 import 'package:notes/views/register_view_screen/register_screen_page.dart';
-import 'package:notes/views/register_view_screen/register_view.dart';
-import 'package:notes/views/sec_splash_screen/splash_screen.dart';
 import 'package:notes/views/verify_email_screen/email_verification_screen_page.dart';
-import 'package:notes/views/verify_email_screen/verify_email_view.dart';
 import 'bloc/auth/auth_event.dart';
 import 'bloc/auth/auth_state.dart';
 import 'constants/helpers/loading/loading_screen.dart';
-import 'constants/theme/text_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
