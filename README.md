@@ -1,4 +1,4 @@
-# notes
+# note app
 
 
 Link to the Apk file: [https://drive.google.com/drive/folders/18z0-A4B79-Nq7u7q1v1xlbynR0W-E62e]
